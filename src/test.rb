@@ -1,36 +1,12 @@
-require_relative 'ui'
+require 'tty-command'
 
-md = "# hello world
+cmd = TTY::Command.new
 
-```ruby
-class Greeter
-  def hello(name)
-    puts \"Hello \#{name}\"
-  end
-end
-```
+expr = "radius = 3
+height = 3
+volume = (1.0/3) * Math::PI * radius**2 * height
+volume"
 
+res = cmd.ruby("-e", expr)
 
-a nice paragraph with text that is quite long a nice paragraph with text that is quite long a nice paragraph with text that is quite long a nice paragraph with text that is quite long
-
-stuff
-
-```py
-def main():
-  print('hello world')
-```
-
-* a list
-* of stuff
-
-ok?
-
-### second header
-
-some text
-
-> and a block quite
-
-hello world"
-
-UI.put_line
+puts "result: #{res.stdout}"

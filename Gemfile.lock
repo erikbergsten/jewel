@@ -74,6 +74,8 @@ GEM
     strings-ansi (0.2.0)
     track_open_instances (0.1.15)
     tty-color (0.6.0)
+    tty-command (0.10.1)
+      pastel (~> 0.8)
     tty-cursor (0.7.1)
     tty-markdown (0.7.2)
       kramdown (>= 1.16.2, < 3.0)
@@ -107,6 +109,7 @@ DEPENDENCIES
   git
   pastel
   ruby_llm
+  tty-command
   tty-markdown
   tty-prompt
   tty-screen

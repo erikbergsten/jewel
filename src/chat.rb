@@ -1,11 +1,46 @@
 require 'ruby_llm'
 require 'diffy'
 require 'git'
+require 'tty-command'
 require_relative 'ui'
-
 
 RubyLLM.configure do |cfg|
   cfg.openai_api_key = ENV.fetch('OPENAI_API_KEY', nil)
+end
+
+$cmd = TTY::Command.new
+
+class RubyEval < RubyLLM::Tool
+  description "Runs a ruby script using \"ruby -e\" and returns the output"
+  param :code, desc: "the code to execute"
+  def execute(code:)
+    UI::warn "Trying to eval:\n#{code}"
+    if UI::confirm
+      return eval code
+    else
+      return "permission denied"
+    end
+  rescue => e
+    UI::error e.message
+    { error: e.message }
+  end
+end
+
+class RubyScript < RubyLLM::Tool
+  description "Runs a ruby script from the users system"
+  param :path, desc: "path to the script"
+  def execute(path:)
+    UI::warn "Trying to run: #{path}"
+    if UI::confirm
+      result = $cmd.ruby(path)
+      return result.stdout
+    else
+      return "permission denied"
+    end
+  rescue => e
+    UI::error e.message
+    { error: e.message }
+  end
 end
 
 class FileReader < RubyLLM::Tool
@@ -47,18 +82,19 @@ class FileWriter < RubyLLM::Tool
   end
 end
 
+$ruby_eval = RubyEval.new
+$ruby_script = RubyScript.new
 $reader = FileReader.new
 $writer = FileWriter.new
 
 $g = Git.open(".")
 def reset_chat
   files = $g.ls_files.keys.to_s
-  $instructions = """You are a helpful coding assistant. You have the ability to read and write files. The list of files on the users system is: #{files}"""
-  $chat = RubyLLM.chat(model: "gpt-4.1").with_tools($reader, $writer).with_instructions $instructions
+  $instructions = """You are a helpful coding assistant. When asked to perform complicated mathematical or programming tasks use the ruby language and the provided tools. The list of files on the users system is: #{files}"""
+  $chat = RubyLLM.chat(model: "gpt-4.1").with_tools($reader, $writer, $ruby_eval, $ruby_script).with_instructions $instructions
 end
 
 reset_chat
-
 
 def ask_ai(prompt)
   response = $chat.ask prompt

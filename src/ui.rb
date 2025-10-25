@@ -8,7 +8,7 @@ $pastel = Pastel.new
 
 module UI
   def confirm(prompt: "Proceed?")
-    $prompt.yes?(prompt)
+    $prompt.no?(prompt) == false
   end
 
   def error(message)
