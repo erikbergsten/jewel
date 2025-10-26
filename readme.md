@@ -26,7 +26,7 @@ Set `MY_SECRET_API_KEY` and add add this function to your .bashrc to use jewel
 in your terminal:
 
     jewel() {
-      podman run -it --rm -e OPENAI_API_KEY=$MY_SECRET_API_KEY -v $PWD:/work jewel:latest
+      podman run -it --rm -e OPENAI_API_KEY=$MY_SECRET_API_KEY -v $PWD:/work jewel:latest "$@"
     }
 
 ## Development

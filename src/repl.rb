@@ -90,5 +90,23 @@ def interactive_shell
   end
 end
 
-# Start the interactive session
-interactive_shell
+# --- Main Entrypoint: Single Command Mode or Interactive ---
+if ARGV[0] == '-c' && ARGV[1]
+  input = ARGV[1].strip
+  if input.start_with?('/')
+    command_key = input[1..].downcase
+    if COMMANDS.key?(command_key)
+      send(COMMANDS[command_key])
+    else
+      puts "\nUnknown command: #{input}. Use /help for a list of commands."
+    end
+  else
+    print $pastel.bold("Prompt:\n> ")
+    puts input
+    res = ask_ai(input)
+    fmt = "\n# Response (#{res.input_tokens}/#{res.output_tokens} tokens):\n\n#{res.content}\n\n"
+    UI.puts_md fmt
+  end
+else
+  interactive_shell
+end

@@ -11,4 +11,4 @@ copy src src
 
 workdir /work
 
-cmd ["ruby", "/jewel/src/repl.rb"]
+entrypoint ["ruby", "/jewel/src/repl.rb"]
